@@ -1,0 +1,23 @@
+[package]
+name = "bspwm-sss"
+version = "0.1.0"
+authors = ["Jess Balint <jbalint@gmail.com>"]
+
+[dependencies]
+futures = "0.1"
+hyper = "0.11"
+hyper-tls = "0.1"
+tokio-core = "0.1"
+
+libc = "0.2"
+
+ctrlc = "3.0"
+
+time = "0.1"
+
+#urlencoded = "*"
+url = "1.6"
+
+reqwest = "0.8"
+
+x11 = "2.16"
