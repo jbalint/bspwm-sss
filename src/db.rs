@@ -1,5 +1,3 @@
-extern crate time;
-
 use std::collections::HashMap;
 use reqwest::{Client, RequestBuilder};
 use reqwest::header::{Authorization, Basic, ContentType};
@@ -56,8 +54,7 @@ impl Db {
 
         // TODO : make sure this isn't copying
         let q = SPARQL_INSERT_FOCUS.to_string();
-        let t = time::get_time();
-        let time_str = format!("\"{}\"", t.sec * 1000);
+        let time_str = format!("\"{}\"", e.time);
 
         let mut params = HashMap::new();
         params.insert("query", &q);

@@ -1,3 +1,5 @@
+extern crate time;
+
 use std::str::FromStr;
 
 use super::errors::*;
@@ -30,6 +32,7 @@ pub struct NodeEvent {
     pub monitor_id: String,
     pub desktop_id: String,
     pub node_id:    String,
+    pub time:       i64,
 }
 
 impl FromStr for NodeEvent {
@@ -42,11 +45,14 @@ impl FromStr for NodeEvent {
 
         let mut iter_next = || { iter.next().expect("Expected element") };
 
+        let t = time::get_time();
+
         Ok(NodeEvent {
             event_type: NodeEventType::from_str(iter_next())?,
             monitor_id: iter_next().to_string(),
             desktop_id: iter_next().to_string(),
             node_id:    iter_next().to_string(),
+            time:       t.sec * 1_000 + t.nsec as i64 / 1_000_000,
         })
     }
 }
