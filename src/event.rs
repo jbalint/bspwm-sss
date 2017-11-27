@@ -1,28 +1,11 @@
-use std::error::Error;
-use std::fmt;
-use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
-pub struct ParseError;
-
-impl Display for ParseError {
-
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "Parse failed")
-    }
+mod errors {
+    #![allow(unused_doc_comment)]
+    error_chain! {}
 }
 
-impl Error for ParseError {
-
-    fn description(&self) -> &str {
-        "parse failed"
-    }
-
-    fn cause(&self) -> Option<&Error> {
-        None
-    }
-}
+use self::errors::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum NodeEventType {
@@ -33,15 +16,15 @@ pub enum NodeEventType {
 
 impl FromStr for NodeEventType {
 
-    type Err = ParseError;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
 
         match s {
             "node_focus" => Ok(NodeEventType::NodeFocus),
             "node_manage" => Ok(NodeEventType::NodeManage),
-            "node_unmanager" => Ok(NodeEventType::NodeUnmanage),
-            _ => Err(ParseError {}),
+            "node_unmanage" => Ok(NodeEventType::NodeUnmanage),
+            _ => bail!("Unrecognized event type string {}", s),
         }
     }
 }
@@ -56,9 +39,9 @@ pub struct NodeEvent {
 
 impl FromStr for NodeEvent {
 
-    type Err = ParseError;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
 
         let mut iter = s.split_whitespace();
 

@@ -1,13 +1,17 @@
 extern crate time;
 
 use std::collections::HashMap;
-use std::error::Error;
-use std::fmt;
-use std::fmt::{Display, Formatter};
 use reqwest::{Client, RequestBuilder};
 use reqwest::header::{Authorization, Basic, ContentType};
 
 use event::*;
+
+mod errors {
+    #![allow(unused_doc_comment)]
+    error_chain! {}
+}
+
+use self::errors::*;
 
 const SPARQL_UPDATE_ENDPOINT: &str = "https://localhost/stardog/test/update";
 
@@ -32,28 +36,6 @@ where {
 }
 ";
 
-#[derive(Debug, Clone)]
-pub struct DbError;
-
-impl Display for DbError {
-
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "Db error")
-    }
-}
-
-impl Error for DbError {
-
-    fn description(&self) -> &str {
-        "db error"
-    }
-
-    fn cause(&self) -> Option<&Error> {
-        // TODO : put something here
-        None
-    }
-}
-
 pub struct Db {
     client: Client,
 }
@@ -73,7 +55,7 @@ impl Db {
         req
     }
 
-    pub fn insert(&self, e: &NodeEvent) -> Result<(), DbError> {
+    pub fn insert(&self, e: &NodeEvent) -> Result<()> {
 
         let mut req = self.new_req();
 
@@ -91,9 +73,9 @@ impl Db {
 
         debug!("Request with params {:?}", params);
 
-        match req.form(&params).send() {
-            Ok(_) => Ok(()),
-            Err(_) => Err(DbError {}),
-        }
+        req.form(&params)
+            .send()
+            .chain_err(|| "Insert failed")
+            .map(|_| ())
     }
 }

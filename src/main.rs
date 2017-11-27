@@ -8,8 +8,9 @@ extern crate log;
 extern crate pretty_env_logger;
 extern crate ctrlc;
 extern crate reqwest;
+#[macro_use]
+extern crate error_chain;
 
-use std::error::Error;
 use std::io::{BufRead, BufReader, Lines};
 use std::process::{ChildStdout, Command, Stdio};
 use std::str::FromStr;
@@ -21,8 +22,15 @@ mod event;
 use db::Db;
 use event::{NodeEvent};
 
+mod errors {
+    #![allow(unused_doc_comment)]
+    error_chain!{}
+}
+
+use errors::*;
+
 // TODO : return something more general than ChildStdout
-fn bspc<'a>() -> Lines<BufReader<ChildStdout>> {
+fn bspc<'a>() -> Result<Lines<BufReader<ChildStdout>>> {
 
     let child = Command::new("bspc")
         .arg("subscribe")
@@ -38,28 +46,56 @@ fn bspc<'a>() -> Lines<BufReader<ChildStdout>> {
 
     ctrlc::set_handler(move || unsafe {
         kill(pid as i32, SIGTERM);
-    }).expect("failed to install signal handler");
+    }).chain_err(|| "failed to install signal handler")?;
 
-    BufReader::new(child.stdout.unwrap()).lines()
+    Ok(BufReader::new(child.stdout.unwrap()).lines())
 }
 
-fn sss_main() -> Result<(), Box<Error>> {
+fn run() -> Result<()> {
 
     let db = Db::new();
 
-    bspc()
-        .map(|l| NodeEvent::from_str(&l.unwrap()).unwrap())
-        .for_each(|e| { db.insert(&e); });
+    bspc()?
+        .map(|l| NodeEvent::from_str(&l.unwrap()))
+        // TODO : would prefer not to use chain_err() here as it occludes the
+        //        original backtrace of the error
+        .filter_map(|res| match res.chain_err(|| "Failed to parse event") {
+            Ok(e) => Some(e),
+            Err(err) => {
+                log_error(&err);
+                None
+            },
+        })
+        .for_each(|e| match db.insert(&e).chain_err(|| "Failed to insert event") {
+            Ok(_) => (),
+            Err(e) => log_error(&e),
+        });
 
     Ok(())
+}
+
+fn log_error(e: &Error) -> () {
+
+    error!("error: {}", e);
+
+    for e in e.iter().skip(1) {
+        error!("caused by: {}", e);
+        // TODO : can we get the backtrace of each error in here?
+    }
+
+    if let Some(backtrace) = e.backtrace() {
+        warn!("backtrace: {:?}", backtrace);
+    }
 }
 
 fn main() {
 
     pretty_env_logger::init().unwrap();
 
-    match sss_main() {
-        Ok(_) => {},
-        Err(e) => println!("Error: {}", e.to_string()),
+    if let Err(ref e) = run() {
+        log_error(e);
+
+        ::std::process::exit(1);
     }
+
 }
