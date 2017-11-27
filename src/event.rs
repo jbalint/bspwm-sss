@@ -1,7 +1,6 @@
 extern crate time;
 
-use std::fmt;
-use std::fmt::{Display, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::str::FromStr;
 
 use super::errors::*;
@@ -32,7 +31,7 @@ impl Display for NodeEventType {
 
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
 
-        write!(f, "{:?}", self)
+        Debug::fmt(self, f)
     }
 }
 
