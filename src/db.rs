@@ -89,6 +89,8 @@ impl Db {
         params.insert("$desktop_id", &e.desktop_id);
         params.insert("$node_id", &e.node_id);
 
+        debug!("Request with params {:?}", params);
+
         match req.form(&params).send() {
             Ok(_) => Ok(()),
             Err(_) => Err(DbError {}),

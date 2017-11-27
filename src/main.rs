@@ -1,7 +1,11 @@
+
 //#![allow(unused_imports)]
 //#![allow(unused_variables)]
 
 extern crate libc;
+#[macro_use]
+extern crate log;
+extern crate pretty_env_logger;
 extern crate ctrlc;
 extern crate reqwest;
 
@@ -51,6 +55,8 @@ fn sss_main() -> Result<(), Box<Error>> {
 }
 
 fn main() {
+
+    pretty_env_logger::init().unwrap();
 
     match sss_main() {
         Ok(_) => {},
