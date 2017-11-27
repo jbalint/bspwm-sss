@@ -1,11 +1,6 @@
 use std::str::FromStr;
 
-mod errors {
-    #![allow(unused_doc_comment)]
-    error_chain! {}
-}
-
-use self::errors::*;
+use super::errors::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum NodeEventType {
@@ -21,8 +16,8 @@ impl FromStr for NodeEventType {
     fn from_str(s: &str) -> Result<Self> {
 
         match s {
-            "node_focus" => Ok(NodeEventType::NodeFocus),
-            "node_manage" => Ok(NodeEventType::NodeManage),
+            "node_focus"    => Ok(NodeEventType::NodeFocus),
+            "node_manage"   => Ok(NodeEventType::NodeManage),
             "node_unmanage" => Ok(NodeEventType::NodeUnmanage),
             _ => bail!("Unrecognized event type string {}", s),
         }
@@ -51,7 +46,7 @@ impl FromStr for NodeEvent {
             event_type: NodeEventType::from_str(iter_next())?,
             monitor_id: iter_next().to_string(),
             desktop_id: iter_next().to_string(),
-            node_id: iter_next().to_string(),
+            node_id:    iter_next().to_string(),
         })
     }
 }

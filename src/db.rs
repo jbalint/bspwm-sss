@@ -6,12 +6,7 @@ use reqwest::header::{Authorization, Basic, ContentType};
 
 use event::*;
 
-mod errors {
-    #![allow(unused_doc_comment)]
-    error_chain! {}
-}
-
-use self::errors::*;
+use super::errors::*;
 
 const SPARQL_UPDATE_ENDPOINT: &str = "https://localhost/stardog/test/update";
 

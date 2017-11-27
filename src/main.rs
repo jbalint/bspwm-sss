@@ -57,16 +57,14 @@ fn run() -> Result<()> {
 
     bspc()?
         .map(|l| NodeEvent::from_str(&l.unwrap()))
-        // TODO : would prefer not to use chain_err() here as it occludes the
-        //        original backtrace of the error
-        .filter_map(|res| match res.chain_err(|| "Failed to parse event") {
+        .filter_map(|res| match res {
             Ok(e) => Some(e),
             Err(err) => {
                 log_error(&err);
                 None
             },
         })
-        .for_each(|e| match db.insert(&e).chain_err(|| "Failed to insert event") {
+        .for_each(|e| match db.insert(&e) {
             Ok(_) => (),
             Err(e) => log_error(&e),
         });
