@@ -1,5 +1,7 @@
 extern crate time;
 
+use std::fmt;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 use super::errors::*;
@@ -23,6 +25,14 @@ impl FromStr for NodeEventType {
             "node_unmanage" => Ok(NodeEventType::NodeUnmanage),
             _ => bail!("Unrecognized event type string {}", s),
         }
+    }
+}
+
+impl Display for NodeEventType {
+
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+
+        write!(f, "{:?}", self)
     }
 }
 

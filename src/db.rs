@@ -10,18 +10,19 @@ const SPARQL_UPDATE_ENDPOINT: &str = "https://localhost/stardog/test/update";
 
 /// SPARQL update for a focus event
 // # (c.f. #4442)
-const SPARQL_INSERT_FOCUS: &str =
+const SPARQL_INSERT_NODE_EVENT: &str =
     "
 prefix bspwm-sss: <http://github.com/jbalint/bspwm-sss#>
 
 insert {
-  [] a bspwm-sss:FocusEvent ;
+  [] a ?event_type ;
     bspwm-sss:monitor ?monitor ;
     bspwm-sss:desktop ?desktop ;
     bspwm-sss:node ?node ;
     bspwm-sss:time ?time
 }
 where {
+  bind(iri(concat(str(bspwm-sss:), ?event_type_str, \"Event\")) as ?event_type)
   bind(iri(concat(str(bspwm-sss:), ?monitor_id)) as ?monitor)
   bind(iri(concat(str(bspwm-sss:), ?desktop_id)) as ?desktop)
   bind(iri(concat(str(bspwm-sss:), ?node_id)) as ?node)
@@ -52,16 +53,18 @@ impl Db {
 
         let mut req = self.new_req();
 
-        // TODO : make sure this isn't copying
-        let q = SPARQL_INSERT_FOCUS.to_string();
-        let time_str = format!("\"{}\"", e.time);
+        let time_str = e.time.to_string();
+        let type_str = e.event_type.to_string();
 
-        let mut params = HashMap::new();
-        params.insert("query", &q);
-        params.insert("$time_ms", &time_str);
-        params.insert("$monitor_id", &e.monitor_id);
-        params.insert("$desktop_id", &e.desktop_id);
-        params.insert("$node_id", &e.node_id);
+        let tostr = |ref v| format!("\"{}\"", v);
+
+        let mut params: HashMap<&str, String> = HashMap::new();
+        params.insert("query", SPARQL_INSERT_NODE_EVENT.to_string());
+        params.insert("$event_type_str", tostr(&type_str));
+        params.insert("$monitor_id", tostr(&e.monitor_id));
+        params.insert("$desktop_id", tostr(&e.desktop_id));
+        params.insert("$node_id",    tostr(&e.node_id));
+        params.insert("$time_ms",    tostr(&time_str));
 
         debug!("Request with params {:?}", params);
 
