@@ -20,9 +20,11 @@ url = "1.6"
 
 reqwest = "0.8"
 
-x11 = "2.16"
+x11 = { version = "2.17", features = ["xlib"] }
 
 log = "0.3"
 pretty_env_logger = "0.1"
 
 error-chain = "0.11"
+
+xcb = "0.8"

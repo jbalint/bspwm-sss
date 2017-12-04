@@ -6,6 +6,7 @@ extern crate pretty_env_logger;
 extern crate reqwest;
 #[macro_use]
 extern crate error_chain;
+extern crate x11;
 
 use std::str::FromStr;
 use std::thread;
@@ -13,6 +14,7 @@ use std::thread;
 mod bspc;
 mod db;
 mod event;
+mod win_track;
 
 use db::Db;
 use event::NodeEvent;
