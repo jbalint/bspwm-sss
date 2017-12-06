@@ -1,13 +1,15 @@
 extern crate ctrlc;
 
-use std::io::{BufRead, BufReader, Lines};
-use std::process::{ChildStdout, Command, Stdio};
+use std::io::{BufRead, BufReader};
+use std::process::{Command, Stdio};
 use libc::{kill, SIGTERM};
 
 use super::errors::*;
 
-// TODO : return something more general than ChildStdout
-pub fn bspc() -> Result<Lines<BufReader<ChildStdout>>> {
+// https://github.com/baskerville/bspwm/blob/master/src/bspc.c
+pub fn bspc_listen<F>(listener: F) -> ()
+    where F: Fn(String) -> ()
+{
 
     let child = Command::new("bspc")
         .arg("subscribe")
@@ -23,7 +25,10 @@ pub fn bspc() -> Result<Lines<BufReader<ChildStdout>>> {
 
     ctrlc::set_handler(move || unsafe {
         kill(pid as i32, SIGTERM);
-    }).chain_err(|| "failed to install signal handler")?;
+    }).chain_err(|| "failed to install signal handler").unwrap();
 
-    Ok(BufReader::new(child.stdout.unwrap()).lines())
+    BufReader::new(child.stdout.unwrap())
+        .lines()
+        .map(|l| l.unwrap())
+        .for_each(listener);
 }

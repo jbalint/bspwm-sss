@@ -8,6 +8,7 @@ extern crate reqwest;
 extern crate error_chain;
 
 use std::str::FromStr;
+use std::thread;
 
 mod bspc;
 mod db;
@@ -27,19 +28,15 @@ fn run() -> Result<()> {
 
     let db = Db::new();
 
-    bspc::bspc()?
-        .map(|l| NodeEvent::from_str(&l.unwrap()))
-        .filter_map(|res| match res {
-            Ok(e) => Some(e),
-            Err(err) => {
-                log_error(&err);
-                None
-            },
-        })
-        .for_each(|e| match db.insert(&e) {
+    thread::spawn(move || {
+        bspc::bspc_listen(|l| match NodeEvent::from_str(&l).and_then(|e| db.insert(&e)) {
             Ok(_) => (),
             Err(e) => log_error(&e),
         });
+    });
+
+    // nighty
+    loop { thread::park(); }
 
     Ok(())
 }
