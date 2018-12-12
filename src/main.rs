@@ -40,7 +40,7 @@ fn run() -> Result<()> {
     // nighty
     loop { thread::park(); }
 
-    Ok(())
+    //Ok(())
 }
 
 fn log_error(e: &Error) -> () {
@@ -68,3 +68,8 @@ fn main() {
     }
 
 }
+
+fn x2() {
+    let x: HashMap;
+}
+

@@ -22,8 +22,8 @@ fn something() {
         // TODO : check return value?
         if disp.is_null() {
         }
-        let screen = xlib::XDefaultScreenOfDisplay(disp);
-        let root = xlib::XRootWindowOfScreen(screen);
+        //let screen = xlib::XDefaultScreenOfDisplay(disp);
+        //let root = xlib::XRootWindowOfScreen(screen);
         let mut event = xlib::XEvent { pad: [0; 24] };
         let mut attr = uninitialized();
         let win = 29360129; // or root
@@ -50,7 +50,7 @@ fn something() {
         });
         xlib::XGetWindowAttributes(disp, win, &mut attr);
         println!("Attr: {:?}", attr);
-        while true {
+        loop {
             use std::os::raw::c_char;
             xlib::XNextEvent(disp, &mut event);
             println!("Event: {:?}", event);
@@ -63,4 +63,10 @@ fn something() {
             // ftp://www.x.org/pub/X11R7.7/doc/man/man3/XPropertyEvent.3.xhtml
         }
     }
+}
+
+#[allow(unconditional_recursion, dead_code)]
+fn x() {
+    something();
+    x();
 }

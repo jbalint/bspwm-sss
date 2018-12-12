@@ -49,6 +49,14 @@ impl Db {
         req
     }
 
+    /// Insert a NodeEvent into the DB
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - NodeEvent to insert
+    ///
+    /// # Remarks
+    /// 
     pub fn insert(&self, e: &NodeEvent) -> Result<()> {
 
         let mut req = self.new_req();
