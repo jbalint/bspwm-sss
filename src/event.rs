@@ -7,9 +7,9 @@ use super::errors::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum NodeEventType {
+    NodeAdd,
     NodeFocus,
-    NodeManage,
-    NodeUnmanage,
+    NodeRemove,
 }
 
 impl FromStr for NodeEventType {
@@ -19,9 +19,9 @@ impl FromStr for NodeEventType {
     fn from_str(s: &str) -> Result<Self> {
 
         match s {
-            "node_focus"    => Ok(NodeEventType::NodeFocus),
-            "node_manage"   => Ok(NodeEventType::NodeManage),
-            "node_unmanage" => Ok(NodeEventType::NodeUnmanage),
+            "node_add"    => Ok(NodeEventType::NodeAdd),
+            "node_focus"  => Ok(NodeEventType::NodeFocus),
+            "node_remove" => Ok(NodeEventType::NodeRemove),
             _ => bail!("Unrecognized event type string {}", s),
         }
     }

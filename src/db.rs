@@ -1,6 +1,8 @@
+//! Database i/o module
+//! 
+//! This 
 use std::collections::HashMap;
 use reqwest::{Client, RequestBuilder};
-use reqwest::header::{Authorization, Basic, ContentType};
 
 use event::*;
 
@@ -15,11 +17,13 @@ const SPARQL_INSERT_NODE_EVENT: &str =
 prefix bspwm-sss: <http://github.com/jbalint/bspwm-sss#>
 
 insert {
+graph bspwm-sss: {
   [] a ?event_type ;
     bspwm-sss:monitor ?monitor ;
     bspwm-sss:desktop ?desktop ;
     bspwm-sss:node ?node ;
     bspwm-sss:time ?time
+}
 }
 where {
   bind(iri(concat(str(bspwm-sss:), ?event_type_str, \"Event\")) as ?event_type)
@@ -40,13 +44,8 @@ impl Db {
     }
 
     fn new_req(&self) -> RequestBuilder {
-        let mut req: RequestBuilder = self.client.post(SPARQL_UPDATE_ENDPOINT);
-        req.header(ContentType::form_url_encoded())
-            .header(Authorization(Basic {
-                username: "admin".to_string(),
-                password: Some("admin".to_string()),
-            }));
-        req
+        let req: RequestBuilder = self.client.post(SPARQL_UPDATE_ENDPOINT);
+        req.basic_auth("admin", Some(&"admin"))
     }
 
     /// Insert a NodeEvent into the DB
@@ -59,7 +58,7 @@ impl Db {
     /// 
     pub fn insert(&self, e: &NodeEvent) -> Result<()> {
 
-        let mut req = self.new_req();
+        let req = self.new_req();
 
         let time_str = e.time.to_string();
         let type_str = e.event_type.to_string();

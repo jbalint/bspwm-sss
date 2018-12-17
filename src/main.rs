@@ -1,3 +1,5 @@
+//! 
+//! 
 
 extern crate libc;
 #[macro_use]
@@ -6,7 +8,6 @@ extern crate pretty_env_logger;
 extern crate reqwest;
 #[macro_use]
 extern crate error_chain;
-extern crate x11;
 
 use std::str::FromStr;
 use std::thread;
@@ -20,7 +21,7 @@ use db::Db;
 use event::NodeEvent;
 
 mod errors {
-    #![allow(unused_doc_comment)]
+    #![allow(unused_doc_comments)]
     error_chain!{}
 }
 
@@ -39,8 +40,6 @@ fn run() -> Result<()> {
 
     // nighty
     loop { thread::park(); }
-
-    //Ok(())
 }
 
 fn log_error(e: &Error) -> () {
@@ -59,7 +58,7 @@ fn log_error(e: &Error) -> () {
 
 fn main() {
 
-    pretty_env_logger::init().unwrap();
+    pretty_env_logger::init();
 
     if let Err(ref e) = run() {
         log_error(e);
@@ -68,8 +67,3 @@ fn main() {
     }
 
 }
-
-fn x2() {
-    let x: HashMap;
-}
-

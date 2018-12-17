@@ -9,13 +9,26 @@
     //     let screen = setup.roots().nth(0).unwrap();
     // }
 
+extern crate x11;
+
+// TODO : delete me
+// fn test_device_button_mapping() {
+//     unsafe {
+//         use self::x11::xlib;
+//         use self::x11::xinput;
+//         let disp: *mut xlib::Display = xlib::XOpenDisplay(std::ptr::null());
+//         xinput::XListInputDevices(disp, );
+//         xinput::XGetDeviceKeyMapping(disp);
+//     }
+// }
+
 fn something() {
     ///////////////////////////////
     // https://docs.rs/x11/2.16.0/x11/xlib/enum._XDisplay.html
     // https://github.com/Kintaro/wtftw/blob/master/xlib/src/xlib_window_system.rs
     // https://stackoverflow.com/questions/45527720/how-can-i-make-a-window-override-redirect-with-glutin
     unsafe {
-        use x11::xlib;
+        use self::x11::xlib;
         use std::mem::uninitialized;
         use std;
         let disp: *mut xlib::Display = xlib::XOpenDisplay(std::ptr::null());
@@ -63,10 +76,4 @@ fn something() {
             // ftp://www.x.org/pub/X11R7.7/doc/man/man3/XPropertyEvent.3.xhtml
         }
     }
-}
-
-#[allow(unconditional_recursion, dead_code)]
-fn x() {
-    something();
-    x();
 }
