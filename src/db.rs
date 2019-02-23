@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use reqwest::{Client, RequestBuilder};
 
-use event::*;
+use crate::event::*;
 
 use super::errors::*;
 

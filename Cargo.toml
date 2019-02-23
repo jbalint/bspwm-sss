@@ -2,6 +2,7 @@
 name = "bspwm-sss"
 version = "0.1.0"
 authors = ["Jess Balint <jbalint@gmail.com>"]
+edition = "2018"
 
 [dependencies]
 futures = "*"
